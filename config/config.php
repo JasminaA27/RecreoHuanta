@@ -1,14 +1,14 @@
 <?php
 // Configuración de la base de datos
 const BD_HOST = 'localhost';
-const BD_NAME = 'sistema_recreos';
+const BD_NAME = 'recreo_huanta';
 const BD_USER = 'root';
-const BD_PASSWORD = '';
+const BD_PASSWORD = 'root';
 const BD_CHARSET = 'utf8';
 
 // URLs del proyecto
-const BASE_URL = 'http://localhost/prueba1/';
-const BASE_URL_SERVER = 'http://localhost/prueba1/';
+const BASE_URL = 'http://localhost:8888/RecreoHuanta/';
+const BASE_URL_SERVER = 'http://localhost:8888/RecreoHuanta/';
 
 // Configuración de sesiones
 ini_set('session.cookie_httponly', 1);
