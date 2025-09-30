@@ -49,6 +49,33 @@
                 <span>Usuarios</span>
             </a>
         </li>
+        <li class="nav-item">
+    <a class="nav-link <?php echo ($action ?? '') === 'cliente_api' ? 'active' : ''; ?>" 
+       href="<?php echo BASE_URL; ?>index.php?action=cliente_api">
+        <!-- Cliente -->
+        <i class="bi bi-person"></i> 
+        <span>Cliente</span>
+    </a>
+</li>
+
+<li class="nav-item">
+    <a class="nav-link <?php echo ($action ?? '') === 'tokens' ? 'active' : ''; ?>" 
+       href="<?php echo BASE_URL; ?>index.php?action=tokens">
+        <!-- Tokens -->
+        <i class="bi bi-key"></i> 
+        <span>Tokens</span>
+    </a>
+</li>
+
+<li class="nav-item">
+    <a class="nav-link <?php echo ($action ?? '') === 'request' ? 'active' : ''; ?>" 
+       href="<?php echo BASE_URL; ?>index.php?action=request">
+        <!-- Request -->
+        <i class="bi bi-send"></i>
+        <span>Request</span>
+    </a>
+</li>
+
     </ul>
     
     <div class="sidebar-footer">
