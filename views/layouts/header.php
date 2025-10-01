@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo $pageTitle ?? 'Panel Administrativo - Sistema Recreos'; ?></title>
     
-    
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -49,33 +48,33 @@
                 <span>Usuarios</span>
             </a>
         </li>
+        
+        <!-- API Management Section -->
+       
+        
         <li class="nav-item">
-    <a class="nav-link <?php echo ($action ?? '') === 'cliente_api' ? 'active' : ''; ?>" 
-       href="<?php echo BASE_URL; ?>index.php?action=cliente_api">
-        <!-- Cliente -->
-        <i class="bi bi-person"></i> 
-        <span>Cliente</span>
-    </a>
-</li>
+            <a class="nav-link <?php echo ($action ?? '') === 'cliente_api' ? 'active' : ''; ?>" 
+               href="<?php echo BASE_URL; ?>index.php?action=cliente_api">
+                <i class="bi bi-person-badge"></i>
+                <span>Clientes API</span>
+            </a>
+        </li>
 
-<li class="nav-item">
-    <a class="nav-link <?php echo ($action ?? '') === 'tokens' ? 'active' : ''; ?>" 
-       href="<?php echo BASE_URL; ?>index.php?action=tokens">
-        <!-- Tokens -->
-        <i class="bi bi-key"></i> 
-        <span>Tokens</span>
-    </a>
-</li>
+        <li class="nav-item">
+            <a class="nav-link <?php echo ($action ?? '') === 'tokens_api' ? 'active' : ''; ?>" 
+               href="<?php echo BASE_URL; ?>index.php?action=tokens_api">
+                <i class="bi bi-key"></i>
+                <span>Tokens API</span>
+            </a>
+        </li>
 
-<li class="nav-item">
-    <a class="nav-link <?php echo ($action ?? '') === 'request' ? 'active' : ''; ?>" 
-       href="<?php echo BASE_URL; ?>index.php?action=request">
-        <!-- Request -->
-        <i class="bi bi-send"></i>
-        <span>Request</span>
-    </a>
-</li>
-
+        <li class="nav-item">
+            <a class="nav-link <?php echo ($action ?? '') === 'count_request' ? 'active' : ''; ?>" 
+               href="<?php echo BASE_URL; ?>index.php?action=count_request">
+                <i class="bi bi-graph-up"></i>
+                <span>Estadísticas API</span>
+            </a>
+        </li>
     </ul>
     
     <div class="sidebar-footer">

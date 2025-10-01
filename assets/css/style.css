@@ -651,3 +651,63 @@ body {
         --dark-color: #f8fafc;
     }
 }
+/* API Management Styles */
+.nav-section {
+    padding: 0.75rem 1rem 0.5rem;
+    margin-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.nav-section-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+}
+
+/* Badge styles */
+.badge-api {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.badge-token {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.badge-request {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+/* Stats cards */
+.stats-card {
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stats-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.stats-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+/* Token display */
+.token-display {
+    font-family: 'Courier New', monospace;
+    background: var(--light-bg);
+    padding: 0.5rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    word-break: break-all;
+}

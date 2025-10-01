@@ -3,6 +3,9 @@ require_once 'config/config.php';
 require_once 'controllers/AuthController.php';
 require_once 'controllers/UsuarioController.php';
 require_once 'controllers/RecreoController.php';
+require_once 'controllers/ClienteApiController.php';
+require_once 'controllers/TokenApiController.php';
+require_once 'controllers/CountRequestController.php';
 
 // Obtener la acción de la URL
 $action = $_GET['action'] ?? 'login';
@@ -69,6 +72,75 @@ try {
                     break;
                 case 'delete':
                     $controller->delete();
+                    break;
+                default:
+                    $controller->index();
+                    break;
+            }
+            break;
+
+        // Gestión de Clientes API
+        case 'cliente_api':
+            $controller = new ClienteApiController();
+            
+            switch ($method) {
+                case 'create':
+                    $controller->create();
+                    break;
+                case 'edit':
+                    $controller->edit();
+                    break;
+                case 'change_status':
+                    $controller->changeStatus();
+                    break;
+                case 'delete':
+                    $controller->delete();
+                    break;
+                default:
+                    $controller->index();
+                    break;
+            }
+            break;
+
+        // Gestión de Tokens API
+        case 'tokens_api':
+            $controller = new TokenApiController();
+            
+            switch ($method) {
+                case 'create':
+                    $controller->create();
+                    break;
+                case 'edit':
+                    $controller->edit();
+                    break;
+                case 'change_status':
+                    $controller->changeStatus();
+                    break;
+                case 'delete':
+                    $controller->delete();
+                    break;
+                case 'generate':
+                    $controller->generate();
+                    break;
+                default:
+                    $controller->index();
+                    break;
+            }
+            break;
+
+        // Gestión de Estadísticas API
+        case 'count_request':
+            $controller = new CountRequestController();
+            
+            switch ($method) {
+                case 'stats':
+                    $controller->stats();
+                    break;
+                case 'daily':
+                    $controller->daily();
+                    break;
+                case 'tokens':
+                    $controller->tokens();
                     break;
                 default:
                     $controller->index();
