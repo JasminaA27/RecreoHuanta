@@ -1,12 +1,15 @@
 <?php
 require_once __DIR__ . '/../models/ClienteApi.php';
+require_once __DIR__ . '/../models/TokenApi.php';
 
 class ClienteApiController {
     private $clienteApiModel;
+    private $tokenApiModel;
 
     public function __construct() {
-        requireLogin(); // Verificar que esté logueado
+        requireLogin();
         $this->clienteApiModel = new ClienteApi();
+        $this->tokenApiModel = new TokenApi();
     }
 
     // Mostrar lista de clientes API
@@ -14,8 +17,15 @@ class ClienteApiController {
         $search = $_GET['search'] ?? '';
         
         if (!empty($search)) {
-            // Implementar búsqueda si es necesario
+            // Búsqueda mejorada
             $clientes = $this->clienteApiModel->getAll();
+            $clientes = array_filter($clientes, function($cliente) use ($search) {
+                return stripos($cliente['dni'], $search) !== false || 
+                       stripos($cliente['nombre'], $search) !== false ||
+                       stripos($cliente['apellido'], $search) !== false ||
+                       stripos($cliente['telefono'] ?? '', $search) !== false ||
+                       stripos($cliente['correo'] ?? '', $search) !== false;
+            });
         } else {
             $clientes = $this->clienteApiModel->getAll();
         }
@@ -161,6 +171,28 @@ class ClienteApiController {
             $cliente = $this->clienteApiModel->getById($id);
             include __DIR__ . '/../views/cliente_api/edit.php';
         }
+    }
+
+    // Ver detalles del cliente API
+    public function view() {
+        $id = $_GET['id'] ?? 0;
+        
+        if (!$id) {
+            showAlert('ID de cliente API no válido', 'error');
+            redirect('index.php?action=cliente_api');
+        }
+
+        $cliente = $this->clienteApiModel->getById($id);
+        
+        if (!$cliente) {
+            showAlert('Cliente API no encontrado', 'error');
+            redirect('index.php?action=cliente_api');
+        }
+
+        // Obtener tokens del cliente
+        $tokens = $this->tokenApiModel->getByClient($id);
+
+        include __DIR__ . '/../views/cliente_api/view.php';
     }
 
     // Cambiar estado del cliente API

@@ -189,6 +189,7 @@ include __DIR__ . '/../layouts/header.php';
                                     </form>
                                 </td>
                                 <td>
+                                       
                                     <div class="btn-group" role="group">
                                         <a href="<?php echo BASE_URL; ?>index.php?action=tokens_api&method=view&id=<?php echo $token['id']; ?>" 
                                            class="btn btn-outline-info btn-sm"
@@ -202,7 +203,7 @@ include __DIR__ . '/../layouts/header.php';
                                             <i class="bi bi-pencil"></i>
                                         </a>
                                         
-                                        <form method="POST" 
+                                      <!--   <form method="POST" 
                                               action="<?php echo BASE_URL; ?>index.php?action=tokens_api&method=delete" 
                                               style="display: inline;"
                                               onsubmit="return confirm('¿Estás seguro de eliminar este token?')">
@@ -212,7 +213,7 @@ include __DIR__ . '/../layouts/header.php';
                                                     title="Eliminar token">
                                                 <i class="bi bi-trash"></i>
                                             </button>
-                                        </form>
+                                        </form>-->
                                     </div>
                                 </td>
                             </tr>

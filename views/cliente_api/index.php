@@ -194,13 +194,19 @@ include __DIR__ . '/../layouts/header.php';
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group">
+                                        <a href="<?php echo BASE_URL; ?>index.php?action=cliente_api&method=view&id=<?php echo $cliente['id']; ?>" 
+                                           class="btn btn-outline-info btn-sm"
+                                           title="Ver detalles">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        
                                         <a href="<?php echo BASE_URL; ?>index.php?action=cliente_api&method=edit&id=<?php echo $cliente['id']; ?>" 
                                            class="btn btn-outline-primary btn-sm"
                                            title="Editar cliente">
                                             <i class="bi bi-pencil"></i>
                                         </a>
                                         
-                                        <form method="POST" 
+                                       <!--  <form method="POST" 
                                               action="<?php echo BASE_URL; ?>index.php?action=cliente_api&method=delete" 
                                               style="display: inline;"
                                               onsubmit="return confirm('¿Estás seguro de eliminar este cliente API?')">
@@ -210,7 +216,7 @@ include __DIR__ . '/../layouts/header.php';
                                                     title="Eliminar cliente">
                                                 <i class="bi bi-trash"></i>
                                             </button>
-                                        </form>
+                                        </form>-->
                                     </div>
                                 </td>
                             </tr>

@@ -41,6 +41,9 @@ try {
                 case 'edit':
                     $controller->edit();
                     break;
+                case 'view':
+                    $controller->view();
+                    break;
                 case 'change_status':
                     $controller->changeStatus();
                     break;
@@ -90,6 +93,9 @@ try {
                 case 'edit':
                     $controller->edit();
                     break;
+                case 'view':
+                    $controller->view();
+                    break;
                 case 'change_status':
                     $controller->changeStatus();
                     break;
@@ -113,6 +119,9 @@ try {
                 case 'edit':
                     $controller->edit();
                     break;
+                case 'view':
+                    $controller->view();
+                    break;
                 case 'change_status':
                     $controller->changeStatus();
                     break;
@@ -133,11 +142,23 @@ try {
             $controller = new CountRequestController();
             
             switch ($method) {
+                case 'create':
+                    $controller->create();
+                    break;
+                case 'edit':
+                    $controller->edit();
+                    break;
+                case 'view':
+                    $controller->view();
+                    break;
+                case 'delete':
+                    $controller->delete();
+                    break;
+                case 'cleanup':
+                    $controller->cleanup();
+                    break;
                 case 'stats':
                     $controller->stats();
-                    break;
-                case 'daily':
-                    $controller->daily();
                     break;
                 case 'tokens':
                     $controller->tokens();
