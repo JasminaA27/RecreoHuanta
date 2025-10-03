@@ -121,6 +121,9 @@ class TokenApi {
         } while ($this->tokenExists($token));
         
         return $token;
+    // Crear token final con id del cliente y fecha
+   
+    
     }
 
     // Obtener estadísticas de tokens

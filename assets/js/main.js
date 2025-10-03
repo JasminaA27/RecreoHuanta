@@ -506,4 +506,6 @@ window.sistemRecreosUtils = {
     scrollToElement,
     handleAjaxError,
     validateForm
-};
+}
+
+;
