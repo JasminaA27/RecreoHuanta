@@ -41,9 +41,7 @@ try {
                 case 'edit':
                     $controller->edit();
                     break;
-                case 'view':
-                    $controller->view();
-                    break;
+                
                 case 'change_status':
                     $controller->changeStatus();
                     break;
@@ -142,12 +140,12 @@ try {
             $controller = new CountRequestController();
             
             switch ($method) {
-                case 'create':
+              /* case 'create':
                     $controller->create();
                     break;
                 case 'edit':
                     $controller->edit();
-                    break;
+                    break;*/
                 case 'view':
                     $controller->view();
                     break;
