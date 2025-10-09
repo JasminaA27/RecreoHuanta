@@ -7,234 +7,331 @@ class ClienteApiController {
     private $tokenApiModel;
 
     public function __construct() {
-        requireLogin();
         $this->clienteApiModel = new ClienteApi();
         $this->tokenApiModel = new TokenApi();
     }
 
-    // Mostrar lista de clientes API
+    // MOSTRAR VISTA PRINCIPAL CON HTML
     public function index() {
         $search = $_GET['search'] ?? '';
         
-        if (!empty($search)) {
-            // Búsqueda mejorada
+        try {
+            // Obtener todos los clientes
             $clientes = $this->clienteApiModel->getAll();
-            $clientes = array_filter($clientes, function($cliente) use ($search) {
-                return stripos($cliente['dni'], $search) !== false || 
-                       stripos($cliente['nombre'], $search) !== false ||
-                       stripos($cliente['apellido'], $search) !== false ||
-                       stripos($cliente['telefono'] ?? '', $search) !== false ||
-                       stripos($cliente['correo'] ?? '', $search) !== false;
-            });
-        } else {
-            $clientes = $this->clienteApiModel->getAll();
+            
+            // Aplicar filtro de búsqueda si existe
+            if (!empty($search)) {
+                $clientes = array_filter($clientes, function($cliente) use ($search) {
+                    return stripos($cliente['dni'], $search) !== false || 
+                           stripos($cliente['nombre'], $search) !== false ||
+                           stripos($cliente['apellido'], $search) !== false ||
+                           stripos($cliente['correo'], $search) !== false;
+                });
+                // Reindexar el array
+                $clientes = array_values($clientes);
+            }
+            
+            // Obtener estadísticas
+            $stats = $this->clienteApiModel->getStats();
+            
+            // Incluir la vista
+            include __DIR__ . '/../views/cliente_api/index.php';
+            
+        } catch (Exception $e) {
+            // Mostrar error en la vista
+            $error = 'Error al cargar clientes: ' . $e->getMessage();
+            include __DIR__ . '/../views/clientes¿_api/index.php';
         }
-
-        $stats = $this->clienteApiModel->getStats();
-        
-        include __DIR__ . '/../views/cliente_api/index.php';
     }
 
-    // Mostrar formulario de crear cliente API
+    // MOSTRAR FORMULARIO DE CREACIÓN
     public function create() {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->store();
-        } else {
-            include __DIR__ . '/../views/cliente_api/create.php';
-        }
+        // Incluir el formulario de creación
+        include __DIR__ . '/../views/cliente_api/create.php';
     }
 
-    // Guardar nuevo cliente API
+    // PROCESAR CREACIÓN DE CLIENTE
     public function store() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $_SESSION['error'] = 'Método no permitido';
+            header('Location: ' . BASE_URL . 'index.php?action=cliente_api&method=create');
+            exit;
+        }
+
         $data = [
-            'dni' => clean($_POST['dni'] ?? ''),
-            'nombre' => clean($_POST['nombre'] ?? ''),
-            'apellido' => clean($_POST['apellido'] ?? ''),
-            'telefono' => clean($_POST['telefono'] ?? ''),
-            'correo' => clean($_POST['correo'] ?? ''),
+            'dni' => trim($_POST['dni'] ?? ''),
+            'nombre' => trim($_POST['nombre'] ?? ''),
+            'apellido' => trim($_POST['apellido'] ?? ''),
+            'telefono' => trim($_POST['telefono'] ?? ''),
+            'correo' => trim($_POST['correo'] ?? ''),
             'estado' => isset($_POST['estado']) ? 1 : 0
         ];
 
         // Validaciones
-        $errors = [];
-
-        if (empty($data['dni'])) {
-            $errors[] = 'El DNI es obligatorio';
-        }
-
-        if (empty($data['nombre'])) {
-            $errors[] = 'El nombre es obligatorio';
-        }
-
-        if (empty($data['apellido'])) {
-            $errors[] = 'El apellido es obligatorio';
-        }
-
-        if ($this->clienteApiModel->dniExists($data['dni'])) {
-            $errors[] = 'El DNI ya está registrado';
-        }
-
-        if (!empty($data['correo']) && $this->clienteApiModel->correoExists($data['correo'])) {
-            $errors[] = 'El correo electrónico ya está registrado';
-        }
+        $errors = $this->validarCliente($data);
 
         if (!empty($errors)) {
-            showAlert(implode('<br>', $errors), 'error');
-            include __DIR__ . '/../views/cliente_api/create.php';
-            return;
+            $_SESSION['error'] = implode('<br>', $errors);
+            $_SESSION['form_data'] = $data;
+            header('Location: ' . BASE_URL . 'index.php?action=cliente_api&method=create');
+            exit;
         }
 
-        // Crear cliente API
-        $clienteId = $this->clienteApiModel->create($data);
+        try {
+            $clienteId = $this->clienteApiModel->create($data);
 
-        if ($clienteId) {
-            showAlert('Cliente API creado exitosamente', 'success');
-            redirect('index.php?action=cliente_api');
-        } else {
-            showAlert('Error al crear el cliente API', 'error');
-            include __DIR__ . '/../views/cliente_api/create.php';
-        }
-    }
-
-    // Mostrar formulario de editar cliente API
-    public function edit() {
-        $id = $_GET['id'] ?? 0;
-        
-        if (!$id) {
-            showAlert('ID de cliente API no válido', 'error');
-            redirect('index.php?action=cliente_api');
-        }
-
-        $cliente = $this->clienteApiModel->getById($id);
-        
-        if (!$cliente) {
-            showAlert('Cliente API no encontrado', 'error');
-            redirect('index.php?action=cliente_api');
-        }
-
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $this->update($id);
-        } else {
-            include __DIR__ . '/../views/cliente_api/edit.php';
+            if ($clienteId) {
+                $_SESSION['success'] = 'Cliente API creado exitosamente';
+                header('Location: ' . BASE_URL . 'index.php?action=cliente_api');
+                exit;
+            } else {
+                $_SESSION['error'] = 'Error al crear cliente API';
+                $_SESSION['form_data'] = $data;
+                header('Location: ' . BASE_URL . 'index.php?action=cliente_api&method=create');
+                exit;
+            }
+            
+        } catch (Exception $e) {
+            $_SESSION['error'] = 'Error al crear cliente: ' . $e->getMessage();
+            $_SESSION['form_data'] = $data;
+            header('Location: ' . BASE_URL . 'index.php?action=cliente_api&method=create');
+            exit;
         }
     }
 
-    // Actualizar cliente API
-    public function update($id) {
-        $data = [
-            'dni' => clean($_POST['dni'] ?? ''),
-            'nombre' => clean($_POST['nombre'] ?? ''),
-            'apellido' => clean($_POST['apellido'] ?? ''),
-            'telefono' => clean($_POST['telefono'] ?? ''),
-            'correo' => clean($_POST['correo'] ?? ''),
-            'estado' => isset($_POST['estado']) ? 1 : 0
-        ];
-
-        // Validaciones
-        $errors = [];
-
-        if (empty($data['dni'])) {
-            $errors[] = 'El DNI es obligatorio';
-        }
-
-        if (empty($data['nombre'])) {
-            $errors[] = 'El nombre es obligatorio';
-        }
-
-        if (empty($data['apellido'])) {
-            $errors[] = 'El apellido es obligatorio';
-        }
-
-        if ($this->clienteApiModel->dniExists($data['dni'], $id)) {
-            $errors[] = 'El DNI ya está registrado';
-        }
-
-        if (!empty($data['correo']) && $this->clienteApiModel->correoExists($data['correo'], $id)) {
-            $errors[] = 'El correo electrónico ya está registrado';
-        }
-
-        if (!empty($errors)) {
-            showAlert(implode('<br>', $errors), 'error');
-            $cliente = $this->clienteApiModel->getById($id);
-            include __DIR__ . '/../views/cliente_api/edit.php';
-            return;
-        }
-
-        // Actualizar cliente API
-        $success = $this->clienteApiModel->update($id, $data);
-
-        if ($success) {
-            showAlert('Cliente API actualizado exitosamente', 'success');
-            redirect('index.php?action=cliente_api');
-        } else {
-            showAlert('Error al actualizar el cliente API', 'error');
-            $cliente = $this->clienteApiModel->getById($id);
-            include __DIR__ . '/../views/cliente_api/edit.php';
-        }
-    }
-
-    // Ver detalles del cliente API
+    // MOSTRAR DETALLES DEL CLIENTE
     public function view() {
         $id = $_GET['id'] ?? 0;
         
         if (!$id) {
-            showAlert('ID de cliente API no válido', 'error');
-            redirect('index.php?action=cliente_api');
+            $_SESSION['error'] = 'ID de cliente no válido';
+            header('Location: ' . BASE_URL . 'index.php?action=cliente_api');
+            exit;
         }
 
-        $cliente = $this->clienteApiModel->getById($id);
-        
-        if (!$cliente) {
-            showAlert('Cliente API no encontrado', 'error');
-            redirect('index.php?action=cliente_api');
+        try {
+            $cliente = $this->clienteApiModel->getById($id);
+            
+            if ($cliente) {
+                // Obtener tokens del cliente
+                $tokens = $this->tokenApiModel->getByClient($id);
+                $cliente['tokens'] = $tokens;
+                
+                include __DIR__ . '/../views/cliente_api/view.php';
+            } else {
+                $_SESSION['error'] = 'Cliente no encontrado';
+                header('Location: ' . BASE_URL . 'index.php?action=cliente_api');
+                exit;
+            }
+            
+        } catch (Exception $e) {
+            $_SESSION['error'] = 'Error al obtener cliente: ' . $e->getMessage();
+            header('Location: ' . BASE_URL . 'index.php?action=cliente_api');
+            exit;
         }
-
-        // Obtener tokens del cliente
-        $tokens = $this->tokenApiModel->getByClient($id);
-
-        include __DIR__ . '/../views/cliente_api/view.php';
     }
 
-    // Cambiar estado del cliente API
-    public function changeStatus() {
+    // MOSTRAR FORMULARIO DE EDICIÓN
+    public function edit() {
+        $id = $_GET['id'] ?? 0;
+        
+        if (!$id) {
+            $_SESSION['error'] = 'ID de cliente no válido';
+            header('Location: ' . BASE_URL . 'index.php?action=cliente_api');
+            exit;
+        }
+
+        try {
+            $cliente = $this->clienteApiModel->getById($id);
+            
+            if ($cliente) {
+                include __DIR__ . '/../views/clientes_api/edit.php';
+            } else {
+                $_SESSION['error'] = 'Cliente no encontrado';
+                header('Location: ' . BASE_URL . 'index.php?action=cliente_api');
+                exit;
+            }
+            
+        } catch (Exception $e) {
+            $_SESSION['error'] = 'Error al cargar cliente: ' . $e->getMessage();
+            header('Location: ' . BASE_URL . 'index.php?action=cliente_api');
+            exit;
+        }
+    }
+
+    // PROCESAR ACTUALIZACIÓN DE CLIENTE
+    public function update() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $_SESSION['error'] = 'Método no permitido';
+            header('Location: ' . BASE_URL . 'index.php?action=cliente_api');
+            exit;
+        }
+
+        $id = $_POST['id'] ?? 0;
+        
+        if (!$id) {
+            $_SESSION['error'] = 'ID de cliente no válido';
+            header('Location: ' . BASE_URL . 'index.php?action=cliente_api');
+            exit;
+        }
+
+        $data = [
+            'dni' => trim($_POST['dni'] ?? ''),
+            'nombre' => trim($_POST['nombre'] ?? ''),
+            'apellido' => trim($_POST['apellido'] ?? ''),
+            'telefono' => trim($_POST['telefono'] ?? ''),
+            'correo' => trim($_POST['correo'] ?? ''),
+            'estado' => isset($_POST['estado']) ? 1 : 0
+        ];
+
+        // Validaciones
+        $errors = $this->validarCliente($data, $id);
+
+        if (!empty($errors)) {
+            $_SESSION['error'] = implode('<br>', $errors);
+            $_SESSION['form_data'] = $data;
+            header('Location: ' . BASE_URL . 'index.php?action=cliente_api&method=edit&id=' . $id);
+            exit;
+        }
+
+        try {
+            $success = $this->clienteApiModel->update($id, $data);
+
+            if ($success) {
+                $_SESSION['success'] = 'Cliente actualizado exitosamente';
+                header('Location: ' . BASE_URL . 'index.php?action=cliente_api&method=view&id=' . $id);
+                exit;
+            } else {
+                $_SESSION['error'] = 'Error al actualizar cliente';
+                $_SESSION['form_data'] = $data;
+                header('Location: ' . BASE_URL . 'index.php?action=cliente_api&method=edit&id=' . $id);
+                exit;
+            }
+            
+        } catch (Exception $e) {
+            $_SESSION['error'] = 'Error al actualizar cliente: ' . $e->getMessage();
+            $_SESSION['form_data'] = $data;
+            header('Location: ' . BASE_URL . 'index.php?action=cliente_api&method=edit&id=' . $id);
+            exit;
+        }
+    }
+
+    // CAMBIAR ESTADO DEL CLIENTE
+    public function change_status() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $_SESSION['error'] = 'Método no permitido';
+            header('Location: ' . BASE_URL . 'index.php?action=cliente_api');
+            exit;
+        }
+
         $id = $_POST['id'] ?? 0;
         $estado = $_POST['estado'] ?? 0;
 
         if (!$id) {
-            showAlert('ID de cliente API no válido', 'error');
-            redirect('index.php?action=cliente_api');
+            $_SESSION['error'] = 'ID de cliente no válido';
+            header('Location: ' . BASE_URL . 'index.php?action=cliente_api');
+            exit;
         }
 
-        $success = $this->clienteApiModel->changeStatus($id, $estado);
+        try {
+            $success = $this->clienteApiModel->changeStatus($id, $estado);
 
-        if ($success) {
-            $estadoTexto = $estado ? 'activado' : 'desactivado';
-            showAlert("Cliente API {$estadoTexto} exitosamente", 'success');
-        } else {
-            showAlert('Error al cambiar el estado del cliente API', 'error');
+            if ($success) {
+                $estadoTexto = $estado ? 'activado' : 'desactivado';
+                $_SESSION['success'] = "Cliente {$estadoTexto} exitosamente";
+            } else {
+                $_SESSION['error'] = 'Error al cambiar estado del cliente';
+            }
+            
+        } catch (Exception $e) {
+            $_SESSION['error'] = 'Error al cambiar estado: ' . $e->getMessage();
         }
 
-        redirect('index.php?action=cliente_api');
+        header('Location: ' . BASE_URL . 'index.php?action=cliente_api');
+        exit;
     }
 
-    // Eliminar cliente API
+    // ELIMINAR CLIENTE
     public function delete() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            $_SESSION['error'] = 'Método no permitido';
+            header('Location: ' . BASE_URL . 'index.php?action=cliente_api');
+            exit;
+        }
+
         $id = $_POST['id'] ?? 0;
 
         if (!$id) {
-            showAlert('ID de cliente API no válido', 'error');
-            redirect('index.php?action=cliente_api');
+            $_SESSION['error'] = 'ID de cliente no válido';
+            header('Location: ' . BASE_URL . 'index.php?action=cliente_api');
+            exit;
         }
 
-        $success = $this->clienteApiModel->delete($id);
+        try {
+            // Verificar si el cliente tiene tokens activos
+            $tokens = $this->tokenApiModel->getByClient($id);
+            $tokensActivos = array_filter($tokens, function($token) {
+                return $token['estado'] == 1;
+            });
 
-        if ($success) {
-            showAlert('Cliente API eliminado exitosamente', 'success');
-        } else {
-            showAlert('Error al eliminar el cliente API', 'error');
+            if (!empty($tokensActivos)) {
+                $_SESSION['error'] = 'No se puede eliminar el cliente porque tiene tokens activos';
+                header('Location: ' . BASE_URL . 'index.php?action=cliente_api');
+                exit;
+            }
+
+            $success = $this->clienteApiModel->delete($id);
+
+            if ($success) {
+                $_SESSION['success'] = 'Cliente eliminado exitosamente';
+            } else {
+                $_SESSION['error'] = 'Error al eliminar cliente';
+            }
+            
+        } catch (Exception $e) {
+            $_SESSION['error'] = 'Error al eliminar cliente: ' . $e->getMessage();
         }
 
-        redirect('index.php?action=cliente_api');
+        header('Location: ' . BASE_URL . 'index.php?action=cliente_api');
+        exit;
+    }
+
+    // ========== MÉTODOS PRIVADOS ==========
+
+    private function validarCliente($data, $excludeId = null) {
+        $errors = [];
+
+        if (empty($data['dni'])) {
+            $errors[] = 'El DNI es obligatorio';
+        } elseif (!preg_match('/^[0-9]{8}$/', $data['dni'])) {
+            $errors[] = 'El DNI debe tener 8 dígitos';
+        } elseif ($this->clienteApiModel->dniExists($data['dni'], $excludeId)) {
+            $errors[] = 'El DNI ya está registrado';
+        }
+
+        if (empty($data['nombre'])) {
+            $errors[] = 'El nombre es obligatorio';
+        } elseif (strlen($data['nombre']) < 2) {
+            $errors[] = 'El nombre debe tener al menos 2 caracteres';
+        }
+
+        if (empty($data['apellido'])) {
+            $errors[] = 'El apellido es obligatorio';
+        } elseif (strlen($data['apellido']) < 2) {
+            $errors[] = 'El apellido debe tener al menos 2 caracteres';
+        }
+
+        if (!empty($data['correo']) && !filter_var($data['correo'], FILTER_VALIDATE_EMAIL)) {
+            $errors[] = 'El correo electrónico no es válido';
+        } elseif (!empty($data['correo']) && $this->clienteApiModel->correoExists($data['correo'], $excludeId)) {
+            $errors[] = 'El correo electrónico ya está registrado';
+        }
+
+        return $errors;
     }
 }
-?>
+
+// Iniciar sesión si no está iniciada
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}

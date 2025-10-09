@@ -51,6 +51,18 @@ include __DIR__ . '/../layouts/header.php';
                         <div class="card bg-dark text-light">
                             <div class="card-body">
                                 <code class="fs-6"><?php echo htmlspecialchars($token['token']); ?></code>
+                                <?php 
+                                $tokenParts = explode('_', $token['token']);
+                                if (count($tokenParts) === 3): 
+                                ?>
+                                <div class="mt-2">
+                                    <small class="text-info">
+                                        <strong>Parte aleatoria:</strong> <?php echo htmlspecialchars($tokenParts[0]); ?><br>
+                                        <strong>Fecha:</strong> <?php echo htmlspecialchars($tokenParts[1]); ?> (<?php echo date('d/m/Y', strtotime($tokenParts[1])); ?>)<br>
+                                        <strong>ID Cliente:</strong> <?php echo htmlspecialchars($tokenParts[2]); ?>
+                                    </small>
+                                </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
@@ -102,6 +114,17 @@ include __DIR__ . '/../layouts/header.php';
             </div>
             <div class="card-body">
                 <div class="d-grid gap-2">
+                    <!-- Botón de regenerar token -->
+                    <form method="POST" 
+                          action="<?php echo BASE_URL; ?>index.php?action=tokens_api&method=regenerate" 
+                          onsubmit="return confirm('¿Estás seguro de regenerar este token? El token anterior dejará de funcionar.')"
+                          class="d-grid">
+                        <input type="hidden" name="id" value="<?php echo $token['id']; ?>">
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-arrow-repeat me-2"></i>Regenerar Token
+                        </button>
+                    </form>
+                    
                     <form method="POST" action="<?php echo BASE_URL; ?>index.php?action=tokens_api&method=change_status" class="d-grid">
                         <input type="hidden" name="id" value="<?php echo $token['id']; ?>">
                         <input type="hidden" name="estado" value="<?php echo $token['estado'] ? '0' : '1'; ?>">
@@ -125,5 +148,56 @@ include __DIR__ . '/../layouts/header.php';
         </div>
     </div>
 </div>
+
+<!-- Sección de Estadísticas de Uso -->
+<?php if (isset($requestStats) && !empty($requestStats)): ?>
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="bi bi-graph-up me-2"></i>
+                    Últimas Solicitudes con este Token
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Tipo</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($requestStats as $request): ?>
+                                <tr>
+                                    <td>
+                                        <small><?php echo date('d/m/Y H:i', strtotime($request['fecha'])); ?></small>
+                                    </td>
+                                    <td>
+                                        <?php if (!empty($request['tipo'])): ?>
+                                            <span class="badge bg-info"><?php echo htmlspecialchars($request['tipo']); ?></span>
+                                        <?php else: ?>
+                                            <span class="badge bg-secondary">N/A</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <a href="<?php echo BASE_URL; ?>index.php?action=count_request&method=view&id=<?php echo $request['id']; ?>" 
+                                           class="btn btn-outline-info btn-sm">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?php endif; ?>
 
 <?php include __DIR__ . '/../layouts/footer.php'; ?>

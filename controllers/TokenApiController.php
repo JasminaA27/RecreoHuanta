@@ -159,7 +159,7 @@ class TokenApiController {
     }
 
     // Ver detalles del token
-    public function view() {
+  public function view() {
         $id = $_GET['id'] ?? 0;
         
         if (!$id) {
@@ -173,6 +173,11 @@ class TokenApiController {
             showAlert('Token no encontrado', 'error');
             redirect('index.php?action=tokens_api');
         }
+
+        // Obtener estadísticas de uso del token si es necesario
+        require_once __DIR__ . '/../models/CountRequest.php';
+        $countRequestModel = new CountRequest();
+        $requestStats = $countRequestModel->getByToken($id, 10); // Últimas 10 solicitudes
 
         include __DIR__ . '/../views/tokens_api/view.php';
     }
