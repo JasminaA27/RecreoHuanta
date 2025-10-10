@@ -113,17 +113,10 @@ include __DIR__ . '/../layouts/header.php';
                                 <?php foreach ($topTokens as $token): ?>
                                     <tr>
                                         <td>
-    <code class="token-display">
-        <?php 
-        $tokenParts = explode('_', $request['token']);
-        if (count($tokenParts) === 3) {
-            echo htmlspecialchars($tokenParts[0] . '..._' . $tokenParts[1] . '_' . $tokenParts[2]);
-        } else {
-            echo htmlspecialchars(substr($request['token'], 0, 15) . '...');
-        }
-        ?>
-    </code>
-</td>
+                                            <code class="token-display">
+                                                <?php echo htmlspecialchars(substr($token['token'], 0, 15) . '...'); ?>
+                                            </code>
+                                        </td>
                                         <td><?php echo htmlspecialchars($token['nombre'] . ' ' . $token['apellido']); ?></td>
                                         <td>
                                             <span class="badge bg-primary"><?php echo $token['total_solicitudes']; ?></span>

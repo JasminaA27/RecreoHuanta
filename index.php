@@ -108,37 +108,34 @@ try {
             }
             break;
 
-       // Gestión de Tokens API
-case 'tokens_api':
-    $controller = new TokenApiController();
-    
-    switch ($method) {
-        case 'create':
-            $controller->create();
+        // Gestión de Tokens API
+        case 'tokens_api':
+            $controller = new TokenApiController();
+            
+            switch ($method) {
+                case 'create':
+                    $controller->create();
+                    break;
+                case 'edit':
+                    $controller->edit();
+                    break;
+                case 'view':
+                    $controller->view();
+                    break;
+                case 'change_status':
+                    $controller->changeStatus();
+                    break;
+                case 'delete':
+                    $controller->delete();
+                    break;
+                case 'generate':
+                    $controller->generate();
+                    break;
+                default:
+                    $controller->index();
+                    break;
+            }
             break;
-        case 'edit':
-            $controller->edit();
-            break;
-        case 'view':  // ← ESTA DEBE ESTAR PRESENTE
-            $controller->view();
-            break;
-        case 'change_status':
-            $controller->changeStatus();
-            break;
-        case 'delete':
-            $controller->delete();
-            break;
-        case 'generate':
-            $controller->generate();
-            break;
-        case 'regenerate':
-            $controller->regenerate();
-            break;
-        default:
-            $controller->index();
-            break;
-    }
-    break;
 
         // Gestión de Estadísticas API
         case 'count_request':
@@ -190,23 +187,6 @@ case 'tokens_api':
         redirect('index.php?action=dashboard');
     } else {
         redirect('index.php?action=login');
-    }
-}
-    // Agregar esta ruta
-if ($action === 'clientes_api') {
-    require_once __DIR__ . '/controllers/ClienteApiController.php';
-    $controller = new ClienteApiController();
-    
-    if ($method === 'vista') {
-        $controller->mostrarVista();
-    } else {
-        // Los otros métodos (index, search, create, etc.)
-        if (method_exists($controller, $method)) {
-            $controller->$method();
-        } else {
-            http_response_code(404);
-            echo json_encode(['success' => false, 'message' => 'Método no encontrado']);
-        }
     }
 }
 ?>

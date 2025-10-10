@@ -114,77 +114,16 @@ class TokenApi {
         return $result['count'] > 0;
     }
 
-   // Generar token único con ID del cliente y fecha
-public function generateToken($clientId = null) {
-    // Generar parte aleatoria del token (32 caracteres hexadecimales)
-    $randomPart = bin2hex(random_bytes(16));
+   // Generar token único 
+  public function generateToken() {
+        do {
+            $token = bin2hex(random_bytes(32));
+        } while ($this->tokenExists($token));
+        
+        return $token;
+    // Crear token final con id del cliente y fecha
     
-    // Obtener fecha actual en formato YYYYMMDD
-    $fecha = date('Ymd');
-    
-    // Si se proporciona un clientId, crear token con formato completo
-    if ($clientId) {
-        // Crear token final con formato: random_fecha_clientId
-        $token = $randomPart . '_' . $fecha . '_' . $clientId;
-    } else {
-        // Si no hay clientId, usar secuencia por defecto
-        $token = $randomPart . '_' . $fecha . '_1';
-    }
-    
-    // Verificar que el token no exista
-    $attempts = 0;
-    while ($this->tokenExists($token) && $attempts < 10) {
-        $randomPart = bin2hex(random_bytes(16));
-        if ($clientId) {
-            $token = $randomPart . '_' . $fecha . '_' . $clientId;
-        } else {
-            $token = $randomPart . '_' . $fecha . '_1';
-        }
-        $attempts++;
-    }
-    
-    return $token;
 }
-
-// Función específica para generar token como tu ejemplo
-public function generateTokenLikeExample($clientId = 1) {
-    // Parte fija como en tu ejemplo (opcional)
-    $fixedPart = "4f8e2a9c1b6d3f7e8a2b4c6d8e0f2a4";
-    
-    // Fecha actual en formato YYYYMMDD
-    $fecha = date('Ymd');
-    
-    // Crear token con formato exacto
-    $token = $fixedPart . '_' . $fecha . '_' . $clientId;
-    
-    return $token;
-}
-
-    // Generar token para un cliente específico
-    public function generateTokenForClient($clientId) {
-        return $this->generateToken($clientId);
-    }
-
-    // Regenerar token existente
-    public function regenerate($id) {
-        // Obtener información del token actual
-        $tokenData = $this->getById($id);
-        if (!$tokenData) {
-            return false;
-        }
-        
-        $clientId = $tokenData['id_client_api'];
-        
-        // Generar nuevo token con el mismo formato
-        $newToken = $this->generateToken($clientId);
-        
-        // Actualizar el token en la base de datos
-        $query = "UPDATE tokens_api SET token = ?, fecha_reg = ? WHERE id = ?";
-        $params = [$newToken, date('Y-m-d H:i:s'), $id];
-        
-        return $this->db->execute($query, $params) ? $newToken : false;
-    }
-
     // Obtener estadísticas de tokens
     public function getStats() {
         $query = "SELECT 
@@ -206,54 +145,5 @@ public function generateTokenLikeExample($clientId = 1) {
         return $this->db->select($query, [$limit]);
     }
 
-    // Parsear información del token
-    public function parseToken($token) {
-        $parts = explode('_', $token);
-        
-        if (count($parts) === 3) {
-            return [
-                'random_part' => $parts[0],
-                'fecha' => $parts[1],
-                'client_id' => $parts[2],
-                'formato' => 'completo'
-            ];
-        } else {
-            return [
-                'random_part' => $token,
-                'fecha' => null,
-                'client_id' => null,
-                'formato' => 'simple'
-            ];
-        }
-    }
-
- // Validar formato del token
-public function validateTokenFormat($token) {
-    // El token debe tener aproximadamente 44 caracteres (32 + 1 + 8 + 1 + n)
-    if (strlen($token) < 40) {
-        return false;
-    }
-    
-    // Debe tener exactamente 2 guiones bajos
-    $parts = explode('_', $token);
-    if (count($parts) !== 3) {
-        return false;
-    }
-    
-    // Verificar que cada parte tenga el formato correcto
-    if (!ctype_xdigit($parts[0]) || strlen($parts[0]) !== 32) {
-        return false; // Random part debe ser 32 caracteres hex
-    }
-    
-    if (!is_numeric($parts[1]) || strlen($parts[1]) !== 8) {
-        return false; // Fecha debe ser 8 dígitos (YYYYMMDD)
-    }
-    
-    if (!is_numeric($parts[2])) {
-        return false; // Client ID debe ser numérico
-    }
-    
-    return true;
-}
 }
 ?>
