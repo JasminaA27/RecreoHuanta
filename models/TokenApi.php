@@ -114,16 +114,15 @@ class TokenApi {
         return $result['count'] > 0;
     }
 
-   // Generar token único 
-  public function generateToken() {
+    // Generar token único
+    public function generateToken() {
         do {
             $token = bin2hex(random_bytes(32));
         } while ($this->tokenExists($token));
         
         return $token;
-    // Crear token final con id del cliente y fecha
-    
-}
+    }
+
     // Obtener estadísticas de tokens
     public function getStats() {
         $query = "SELECT 
@@ -144,6 +143,5 @@ class TokenApi {
                  LIMIT ?";
         return $this->db->select($query, [$limit]);
     }
-
 }
 ?>
