@@ -186,7 +186,7 @@ class TokenApiController {
             redirect('index.php?action=tokens_api&method=create');
         }
 
-        $token = $this->tokenApiModel->generateToken();
+        $token = $this->tokenApiModel->generateToken($id_client_api);
         $data = [
             'id_client_api' => $id_client_api,
             'token' => $token,

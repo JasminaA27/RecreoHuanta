@@ -114,11 +114,13 @@ class TokenApi {
         return $result['count'] > 0;
     }
 
-    // Generar token único
-    public function generateToken() {
+        // Generar token único
+    public function generateToken($clientId = null) {
         do {
             $token = bin2hex(random_bytes(32));
         } while ($this->tokenExists($token));
+        
+        $token = $token . '_' . date('Ymd') . '_' . $clientId;
         
         return $token;
     }
