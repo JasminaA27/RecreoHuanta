@@ -1,0 +1,5 @@
+# API PÚBLICA
+RewriteRule ^clienteapi$ index.php?action=api_public [QSA,L]
+RewriteRule ^clienteapi/listar$ index.php?action=api_public&method=listarRecreos [QSA,L]
+RewriteRule ^clienteapi/buscar$ index.php?action=api_public&method=buscarRecreos [QSA,L]
+RewriteRule ^clienteapi/ver/([0-9]+)$ index.php?action=api_public&method=verRecreo&id=$1 [QSA,L]
