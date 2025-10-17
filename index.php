@@ -175,6 +175,29 @@ try {
                 redirect('index.php?action=login');
             }
             break;
+            // Después del caso 'count_request', agrega esto:
+
+        // API PÚBLICA (sin requerir login)
+        case 'api_public':
+            require_once 'controllers/ApiPublicController.php';
+            $controller = new ApiPublicController();
+            
+            switch ($method) {
+                case 'listarRecreos':
+                    $controller->listarRecreos();
+                    break;
+                case 'buscarRecreos':
+                    $controller->buscarRecreos();
+                    break;
+                case 'verRecreo':
+                    $id = $_GET['id'] ?? 0;
+                    $controller->verRecreo($id);
+                    break;
+                default:
+                    $controller->index();
+                    break;
+            }
+            break;
     }
 
 } catch (Exception $e) {

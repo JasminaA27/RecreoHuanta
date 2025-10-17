@@ -28,6 +28,48 @@ class Recreo {
         $query = "SELECT * FROM recreos WHERE id = ?";
         return $this->db->selectOne($query, [$id]);
     }
+    // ========== MÉTODOS DE BÚSQUEDA PARA LA API ==========
+    
+    // BUSCAR POR NOMBRE
+    public function buscarPorNombre($termino) {
+        $searchTerm = "%{$termino}%";
+        $query = "SELECT id, nombre, direccion, telefono, ubicacion, servicio, precio, horario, url_maps 
+                 FROM recreos 
+                 WHERE nombre LIKE ? AND estado = 'activo' 
+                 ORDER BY nombre";
+        return $this->db->select($query, [$searchTerm]);
+    }
+
+    // BUSCAR POR SERVICIO
+    public function buscarPorServicio($termino) {
+        $searchTerm = "%{$termino}%";
+        $query = "SELECT id, nombre, direccion, telefono, ubicacion, servicio, precio, horario, url_maps 
+                 FROM recreos 
+                 WHERE servicio LIKE ? AND estado = 'activo' 
+                 ORDER BY nombre";
+        return $this->db->select($query, [$searchTerm]);
+    }
+
+    // BUSCAR POR DIRECCIÓN
+    public function buscarPorDireccion($termino) {
+        $searchTerm = "%{$termino}%";
+        $query = "SELECT id, nombre, direccion, telefono, ubicacion, servicio, precio, horario, url_maps 
+                 FROM recreos 
+                 WHERE direccion LIKE ? AND estado = 'activo' 
+                 ORDER BY nombre";
+        return $this->db->select($query, [$searchTerm]);
+    }
+
+    // BUSCAR EN TODOS LOS CAMPOS
+    public function buscarEnTodo($termino) {
+        $searchTerm = "%{$termino}%";
+        $query = "SELECT id, nombre, direccion, telefono, ubicacion, servicio, precio, horario, url_maps 
+                 FROM recreos 
+                 WHERE (nombre LIKE ? OR servicio LIKE ? OR direccion LIKE ? OR ubicacion LIKE ?) 
+                 AND estado = 'activo' 
+                 ORDER BY nombre";
+        return $this->db->select($query, [$searchTerm, $searchTerm, $searchTerm, $searchTerm]);
+    }
 
     // Crear nuevo recreo
     public function create($data) {
