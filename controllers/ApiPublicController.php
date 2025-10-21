@@ -194,5 +194,32 @@ class ApiPublicController {
         
         return true;
     }
+        //  RECIEN IMPLEMENTADO PARA VISTA CON DISEÑO PARA LA GUÍA DE RECREOS
+    public function guiaRecreos() {
+        // Validar token via GET parameter para esta vista
+        $token = $_GET['token'] ?? '';
+        
+        if (empty($token)) {
+            // Mostrar página de error si no hay token
+            $this->mostrarErrorToken();
+            return;
+        }
+        
+        // Validar token
+        $tokenData = $this->tokenApiModel->getByToken($token);
+        
+        if (!$tokenData || !$tokenData['estado']) {
+            $this->mostrarErrorToken();
+            return;
+        }
+        
+        // Token válido, mostrar la guía
+        $recreos = $this->recreoModel->getActive();
+        include __DIR__ . '/../views/api_public/guia_recreos.php';
+    }
+    
+    private function mostrarErrorToken() {
+        include __DIR__ . '/../views/api_public/error_token.php';
+    }
 }
 ?>

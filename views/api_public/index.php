@@ -27,8 +27,8 @@ include __DIR__ . '/../layouts/header_public.php';
                     <div class="card-body">
                         <div class="mb-3">
                             <label class="form-label">Token de Acceso</label>
-                            <input type="hidden" class="form-control" id="accessToken" 
-                                   placeholder="Ingrese su token de acceso" required value="f52d5d7e42f1c07b46dc41281c045a29c87b427621103cd8636cb00ddacbb28f_20251017_4">
+                            <input type="text" class="form-control" id="accessToken" 
+                                   placeholder="Ingrese su token de acceso" required>
                             <div class="form-text">
                                 Obtenga su token en el panel de administración
                             </div>
