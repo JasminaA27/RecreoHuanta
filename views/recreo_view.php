@@ -4,7 +4,7 @@ require_once __DIR__ . '/../models/Database.php';
 require_once __DIR__ . '/../models/Recreo.php';
 require_once __DIR__ . '/../models/TokenApi.php';
 
-// TOKEN HARDCODEADO - ESTE ES EL TOKEN QUE ESTÁ EN EL CÓDIGO
+//TOKEN
 $TOKEN_VALIDO = "7ed5be94b77a9d33f5d4e5d2c99703504eb108cdb6d65c87ea1962917fcb63bb_20251021_2";
 
 // Verificar token automáticamente con el token hardcodeado
@@ -895,9 +895,6 @@ $recreosJson = json_encode($recreos);
              id="main-image"
              style="width:100%;height:100%;object-fit:cover;border-radius:12px;">
     </div>
-    
-  
-       
                     <!-- INFORMACIÓN BÁSICA -->
                     <div class="info-grid">
                         <div class="info-card">
