@@ -136,9 +136,7 @@ include __DIR__ . '/../layouts/header.php';
                                             <option value="inactivo" <?php echo $recreo['estado'] === 'inactivo' ? 'selected' : ''; ?>>
                                                 Inactivo
                                             </option>
-                                            <option value="pendiente" <?php echo $recreo['estado'] === 'pendiente' ? 'selected' : ''; ?>>
-                                                Pendiente
-                                            </option>
+                                            
                                         </select>
                                     </form>
                                 </td>
