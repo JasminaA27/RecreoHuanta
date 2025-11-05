@@ -1,6 +1,5 @@
 <?php
 $pageTitle = 'Guía de Recreos - Huanta';
-include __DIR__ . '/../layouts/header_public.php';
 ?>
 
 <style>
@@ -428,7 +427,7 @@ body {
 <div class="main-container">
     <!-- Token Oculto -->
     <div class="token-hidden">
-        <input type="text" id="accessToken" value="f52d5d7e42f1c07b46dc41281c045a29c87b427621103cd8636cb00ddacbb28f_20251017_4">
+        <input type="text" id="accessToken" value="e6e8bfd763ab3273e50f847abae929ab11984d9987a759caee32bb8a8d34129e_20251104_1">
     </div>
 
     <!-- Search Section -->
@@ -947,5 +946,3 @@ document.addEventListener('DOMContentLoaded', function() {
     cargarTodosRecreos();
 });
 </script>
-
-<?php include __DIR__ . '/../layouts/footer_public.php'; ?>
