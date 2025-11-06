@@ -3,12 +3,12 @@
 const BD_HOST = 'localhost';
 const BD_NAME = 'recreo_huanta';
 const BD_USER = 'root';
-const BD_PASSWORD = '';
+const BD_PASSWORD = 'root';
 const BD_CHARSET = 'utf8';
 
 // URLs del proyecto
-const BASE_URL = 'http://localhost/recreohuanta/';
-const BASE_URL_SERVER = 'http://localhost/recreohuanta/';
+const BASE_URL = 'http://localhost:8888/RecreoHuanta/';
+const BASE_URL_SERVER = 'http://localhost:8888/RecreoHuanta/';
 
 // Configuración de sesiones
 ini_set('session.cookie_httponly', 1);
